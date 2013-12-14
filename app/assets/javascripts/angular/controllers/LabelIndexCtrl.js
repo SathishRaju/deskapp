@@ -1,5 +1,5 @@
 
-this.deskapp.controller('LabelIndexCtrl', ['$scope', '$location', $'http', function($scope, $location, $http)
+this.deskapp.controller('LabelIndexCtrl', ['$scope', '$location', '$http', function($scope, $location, $http)
 {
   $scope.labels = [] ;
   $http.get('./labels.json').success( function(data)
