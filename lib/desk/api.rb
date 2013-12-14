@@ -19,8 +19,6 @@ module Desk
 
 		def self.filters
 			authenticate
-			base_url = 'https://xl2db.desk.com'
-			filters_url = '/api/v2/filters.json'
 			filters_response = @access_token.get(ENV["FILTERS_URL"])
 			parsed_filters = JSON.parse(filters_response.body)
 			filters = parsed_filters['_embedded']['entries']
@@ -32,7 +30,7 @@ module Desk
 			filter_cases_url = filter['_links']['cases']['href']
 			puts "filter_cases_url #{filter_cases_url}"
 
-			case_response = @access_token.get( ENV["DESK_SITE"] + "/#{filter_cases_url}")
+			case_response = @access_token.get( ENV["DESK_SITE"] + "#{filter_cases_url}")
 			parsed_cases = JSON.parse(case_response.body)
 			cases = parsed_cases['_embedded']['entries']
 			cases
