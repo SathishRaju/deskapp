@@ -16,14 +16,22 @@ end
   end
 
   def add
-	resp = Desk::API.addlabel 'Prove It'
-	if(resp)
-		puts 'success'
-		@response = {:status => "success", :message => "Prove It"}
-	else
-		puts 'failure'
-		@response =  {:status => "failure", :message => "An Error occured while adding labels!"}
-	end	
+  	puts params.to_hash
+  	@labelname = params["labelname"]
+  	if(!@labelname.blank?)
+
+			resp = Desk::API.addlabel @labelname
+			if(resp)
+				puts 'success'
+				@response = {:status => "success", :message => "Label #{@labelname} successfully added!", :label => @labelname}
+			else
+				puts 'failure'
+				@response =  {:status => "failure", :message => "An Error occured while adding labels!"}
+			end	
+		else
+			puts 'labelname is blank!'
+			@response = {:status => "failure", :message => "Labelname cannot be blank!"}
+		end
 
   	respond_with @response
 

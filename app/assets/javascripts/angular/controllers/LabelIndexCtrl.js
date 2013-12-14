@@ -9,11 +9,12 @@ this.deskapp.controller('LabelIndexCtrl', ['$scope', '$location', '$http', funct
 
 	$scope.addLabel = function()
 	{
-		 $http.get('./addlabel.json').success( function(data)
+		 $http.get('./addlabel.json', {params: {labelname: $scope.labelname}}).success( function(data)
 	  {
-	  	alert(data.message);
 	    if(data.status == "success")	    
-	    	$scope.labels.push(data.message);
+	    	$scope.labels.push(data.label);
+	    else
+	    	alert(data.message);
 	  })
 		 .error(function(data)
 		 {

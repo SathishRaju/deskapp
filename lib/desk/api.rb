@@ -38,7 +38,7 @@ module Desk
 
 		def self.labels
 			authenticate
-			labels_response = @access_token.get(ENV["LABELS_URL"])
+			labels_response = @access_token.get(ENV["LABELS_URL"] )
 			parsed_labels = JSON.parse(labels_response.body)
 			labels = parsed_labels['_embedded']['entries']
 			labelnames = labels.collect {|l| l["name"]}
@@ -61,7 +61,9 @@ module Desk
 			
 			status = labels_response.to_hash["status"][0]
 
-			if status == "201 created"
+			puts status
+
+			if status == "201 Created"
 				true
 			else
 				false
