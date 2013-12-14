@@ -4,16 +4,16 @@ module Desk
 		def self.authenticate
 			
 			@consumer ||= OAuth::Consumer.new(
-	        "Gi8WIg43Sm8doEmBjquC",
-	        "2ZwRhQl9H5MyGU7zNNQKo4gf6QO9Zi7LpdIj1G9R",
-	        :site => "https://xl2db.desk.com",
+	        ENV["DESK_CONSUMER_KEY"],
+	        ENV["DESK_CONSUMER_SECRET"],
+	        :site => ENV["DESK_SITE"],
 	        :scheme => :header
 			)
 
 			@access_token ||= OAuth::AccessToken.from_hash(
 			        @consumer,
-			        :oauth_token => "tCoJQ1tZUjibMItM2PiI",
-			        :oauth_token_secret => "iQG7Xq3IIfMIaita4im8QoMXDCewEtefZISVXJb9"
+			        :oauth_token => ENV["DESK_TOKEN_KEY"],
+			        :oauth_token_secret => ENV["DESK_TOKEN_SECRET"]
 			)
 		end
 
@@ -21,7 +21,7 @@ module Desk
 			authenticate
 			base_url = 'https://xl2db.desk.com'
 			filters_url = '/api/v2/filters.json'
-			filters_response = @access_token.get("#{base_url}#{filters_url}")
+			filters_response = @access_token.get(ENV["FILTERS_URL"])
 			parsed_filters = JSON.parse(filters_response.body)
 			filters = parsed_filters['_embedded']['entries']
 		end
@@ -29,11 +29,10 @@ module Desk
 		def self.cases_for_filter(filter)
 			authenticate
 
-			base_url = 'https://xl2db.desk.com'			
 			filter_cases_url = filter['_links']['cases']['href']
 			puts "filter_cases_url #{filter_cases_url}"
 
-			case_response = @access_token.get("#{base_url}#{filter_cases_url}")
+			case_response = @access_token.get( ENV["DESK_SITE"] + "/#{filter_cases_url}")
 			parsed_cases = JSON.parse(case_response.body)
 			cases = parsed_cases['_embedded']['entries']
 			cases
@@ -41,10 +40,7 @@ module Desk
 
 		def self.labels
 			authenticate
-
-			base_url = 'https://xl2db.desk.com'
-			labels_url = '/api/v2/labels.json'
-			labels_response = @access_token.get("#{base_url}#{labels_url}")
+			labels_response = @access_token.get(ENV["LABELS_URL"])
 			parsed_labels = JSON.parse(labels_response.body)
 			labels = parsed_labels['_embedded']['entries']
 			labelnames = labels.collect {|l| l["name"]}
@@ -54,8 +50,6 @@ module Desk
 
 		def self.addlabel labelname
 			authenticate
-			base_url = 'https://xl2db.desk.com'
-			labels_url = '/api/v2/labels'
 			label =	{
 				  name: labelname,
 				  description: "Label created through API",
@@ -65,7 +59,7 @@ module Desk
 				  ],
 				  color: "blue"
 						}.to_json
-			labels_response = @consumer.request(:post,"#{base_url}#{labels_url}",@access_token, {},label,{ 'Content-Type' => 'application/json' })
+			labels_response = @consumer.request(:post,ENV["LABELS_URL"],@access_token, {},label,{ 'Content-Type' => 'application/json' })
 			
 			status = labels_response.to_hash["status"][0]
 
@@ -78,8 +72,7 @@ module Desk
 
 		def self.attachlabel caseitem, labelname
 			authenticate
-			base_url = 'https://xl2db.desk.com'
-			cases_url = '/api/v2/cases'
+			case_url = ENV["DESK_SITE"] + caseitem["_links"]["self"]["href"]
 			label =	{
 				  name: labelname,
 				  description: "Label created through API",
@@ -89,7 +82,7 @@ module Desk
 				  ],
 				  color: "blue"
 						}.to_json
-			labels_response = @consumer.request(:patch,"#{base_url}#{labels_url}",@access_token, {},label,{ 'Content-Type' => 'application/json' })
+			labels_response = @consumer.request(:patch, case_url,@access_token, {},label,{ 'Content-Type' => 'application/json' })
 			
 			status = labels_response.to_hash["status"][0]
 
