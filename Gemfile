@@ -52,3 +52,7 @@ gem 'haml-rails'
 gem 'oauth'
 
 gem 'bootstrap-sass', '~> 3.0.3.0'
+
+group :production do
+	gem 'pg'
+end
